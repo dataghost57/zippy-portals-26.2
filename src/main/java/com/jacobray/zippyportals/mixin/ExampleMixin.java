@@ -2,26 +2,25 @@ package com.jacobray.zippyportals.mixin;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.Portal;
+import net.minecraft.world.level.block.NetherPortalBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(targets = "net.minecraft.world.entity.PortalProcessor")
+@Mixin(NetherPortalBlock.class)
 public class ExampleMixin {
 
-	@Redirect(
-			method = "processPortalTeleportation",
-			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/world/level/block/Portal;getPortalTransitionTime(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Entity;)I"
-			)
+	@Inject(
+			method = "getPortalTransitionTime",
+			at = @At("HEAD"),
+			cancellable = true
 	)
-	private int zippyPortals$instantPortal(
-			Portal portal,
+	private void zippyPortals$instantNetherPortal(
 			ServerLevel level,
-			Entity entity
+			Entity entity,
+			CallbackInfoReturnable<Integer> cir
 	) {
-		return 0;
+		cir.setReturnValue(0);
 	}
 }
